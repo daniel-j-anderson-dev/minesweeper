@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::fmt::Display;
+use std::{cell, fmt::Display};
 fn main() {
    
     let minesweeper_board = Board::<5, 5>::initialize_random();
@@ -14,6 +14,8 @@ struct Cell {
     is_mine: bool,
     /// number of mines surrounding this cell
     local_mines: usize,
+    /// determines if the user has picked to reveal contents of cell
+    is_revealed: bool,
 }
 impl Display for Cell {
     /// display as mine as "*". If empty, displays the number of mines in cells around it
@@ -31,11 +33,12 @@ impl Cell {
     pub const CLEAR: Self = Self {
         is_mine: false,
         local_mines: 0,
+        is_revealed: false,
     };
     /// used to generate a random cell
     pub fn random() -> Self {
         let mut rng = rand::thread_rng(); // random thread value
-        return Self { is_mine: rng.gen_bool(0.5), local_mines: 0 };
+        return Self { is_mine: rng.gen_bool(0.5), local_mines: 0, is_revealed: false };
     }
 }
 /// Board contains an 2D array of cells
@@ -68,5 +71,39 @@ impl<const W: usize, const H: usize> Board<W, H> {
         return Self {
             cells: cells,
         };
+    }
+    /// determine the local mine count for each cell of the board and assigns it
+    pub fn local_mine_count(&mut self) {
+        let mut local_mine_count: usize = 0;
+
+
+        // I didn't use an iterator bc I couldn't wrap my head around the logic for this given scenario...
+        // It needed to be able to iterate across local cells within the board while also iterating across the entire board
+        for row in 0..W {
+            for col in 0..H {
+                for i in (row as isize - 1)..=(row as isize + 1) {
+                    for j in (col as isize - 1)..=(col as isize + 1) {
+                        // Check if the neighboring cells are within bounds
+                        if i >= 0 && j >= 0 && i < self.cells.len() as isize && j < self.cells[i as usize].len() as isize {
+                            // Increment the local mine count
+                            if self.cells[i as usize][j as usize].is_mine {
+                                local_mine_count += 1;
+                            }
+                        }
+                    }
+                }
+
+                // if the current cell has a mine it is subtracted from the local mine count
+                if self.cells[row][col].is_mine {
+                    local_mine_count -= 1;
+                }
+
+                // set the local mine count for the given cell, based on the count accumulated
+                self.cells[row][col].local_mines = local_mine_count;
+                // reset the local mine count for the next cell in the iteration
+                local_mine_count = 0;
+
+            }
+        }
     }
 }
