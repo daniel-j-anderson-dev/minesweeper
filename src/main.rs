@@ -42,14 +42,4 @@ impl Board {
 
         todo!()
     }
-
-    /// outputs the minesweeper board
-    pub fn display(&self) {
-        for &row in self.cells.iter() {
-            for &element in row.iter() {
-                print!("{} ", element)
-            }
-            println!();
-        }
-    }
 }
