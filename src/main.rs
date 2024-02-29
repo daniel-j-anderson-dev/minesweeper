@@ -4,6 +4,13 @@ fn main() {
    
     let minesweeper_board = Board::<5, 5>::initialize_random();
     println!("{}", minesweeper_board);
+
+    for &row in minesweeper_board.cells.iter() {
+        for &element in row.iter() {
+            print!("{} ", element.local_mines);
+        }
+        println!();
+    }
     
 
 }
@@ -67,10 +74,14 @@ impl<const W: usize, const H: usize> Board<W, H> {
                 *element = Cell::random();
             }
         }
-
-        return Self {
+        // place the array of cells in the board
+        let mut board = Self {
             cells: cells,
         };
+        // determine the local mine count
+        board.local_mine_count();
+
+        return board;
     }
     /// determine the local mine count for each cell of the board and assigns it
     pub fn local_mine_count(&mut self) {
