@@ -1,8 +1,8 @@
 use rand::Rng;
-use std::{fmt::Display, io};
+use std::fmt::Display;
 fn main() {
    
-    let minesweeper_board = Board::initialize_random();
+    let minesweeper_board = Board::<5, 5>::initialize_random();
     println!("{}", minesweeper_board);
     
 
