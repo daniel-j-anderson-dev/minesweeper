@@ -8,8 +8,11 @@ use crate::{
     input::{clear_terminal, get_parsed_input, quit, CellAction},
 };
 
+const WIDTH: usize = 10;
+const HEIGHT: usize = 10;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut board = Board::<10, 10>::random(0.20);
+    let mut board = Board::<WIDTH, HEIGHT>::random(0.20);
 
     loop {
         clear_terminal();
