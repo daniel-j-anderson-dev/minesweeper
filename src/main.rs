@@ -136,4 +136,11 @@ impl<const W: usize, const H: usize> Board<W, H> {
 
         return local_mine_count;
     }
+
+    pub fn cells(&self) -> &[[Cell; W]; H] {
+        return &self.cells;
+    }
+    pub fn cells_mut(&mut self) -> &mut [[Cell; W]; H] {
+        return &mut self.cells;
+    }
 }
