@@ -60,7 +60,7 @@ struct Board<const WIDTH: usize, const HEIGHT: usize> {
     cells: [[Cell; WIDTH]; HEIGHT],
 }
 impl<const W: usize, const H: usize> Display for Board<W, H> {
-    /// displays a board
+    /// displays a board as a grid. rows delimited by new line, cells delimited by a space
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for row in self.cells.iter() {
             for element in row.iter() {
