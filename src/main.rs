@@ -4,13 +4,6 @@ use std::fmt::Display;
 fn main() {
     let minesweeper_board = Board::<5, 5>::random();
     println!("{}", minesweeper_board);
-
-    for &row in minesweeper_board.cells.iter() {
-        for &element in row.iter() {
-            print!("{} ", element.local_mines);
-        }
-        println!();
-    }
 }
 
 #[derive(Clone, Copy)]
@@ -52,6 +45,9 @@ impl Cell {
             local_mines: 0,
             is_revealed: false,
         };
+    }
+    pub fn reveal(&mut self) {
+        self.is_revealed = true;
     }
 }
 
