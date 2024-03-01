@@ -62,8 +62,8 @@ struct Board<const WIDTH: usize, const HEIGHT: usize> {
 impl<const W: usize, const H: usize> Display for Board<W, H> {
     /// displays a board
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for &row in self.cells.iter() {
-            for &element in row.iter() {
+        for row in self.cells.iter() {
+            for element in row.iter() {
                 write!(f, "{} ", element)?;
             }
             write!(f, "\n")?;
