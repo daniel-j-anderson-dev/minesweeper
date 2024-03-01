@@ -1,25 +1,40 @@
 use rand::Rng;
-use std::{fmt::Display, str::FromStr};
+use std::{fmt::Display, io::{stdin, stdout, Write}, str::FromStr};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut minesweeper_board = Board::<10, 10>::random(0.20);
-    for row in minesweeper_board.cells_mut() {
+    let mut board = Board::<10, 10>::random(0.20);
+    for row in board.cells_mut() {
         for cell in row.iter_mut() {
             cell.reveal()
         }
     }
 
     loop {
-        println!("Board:\n{}", minesweeper_board);
+        println!("{}x{} Board:\n{}", board.width(), board.height(), board);
 
-        println!("Select a cell");
-        let row_index: usize = get_parsed_input("Please enter a row number: ")?;
-        let column_index: usize = get_parsed_input("Please enter a column number")?;
+        // allow user to select a cell
+        let row_index = get_parsed_input("Please enter a row number: ")?;
+        let column_index = get_parsed_input("Please enter a column number: ")?;
 
+        // ensure the user entered a valid cell
+        let cell = match board.get_cell_mut(row_index, column_index) {
+            Some(cell) => cell,
+            None => {
+                println!("\n({},{}) is not a cell on the board. (0 based indices)\n", row_index, column_index);
+                continue;
+            },
+        };
 
+        // allow the user to choose an action with that cell 
+        let cell_action: CellAction = get_parsed_input(CellAction::PROMPT)?;
 
-        let cell_action: CellAction = get_parsed_input("What action fo you want to perform on this cell?\n")?;
-
+        // perform cell action
+        match cell_action {
+            CellAction::Reveal => cell.reveal(),
+            CellAction::Flag => cell.flag(),
+            CellAction::Unflag => cell.unflag(),
+            CellAction::Cancel => continue,
+        };
     }
 
     
@@ -33,7 +48,7 @@ pub enum CellAction {
     Cancel,
 }
 impl CellAction {
-    pub const PROMPT: &'static str = "Select an action for this cell\nReveal\nFlag\nUnflag\nCancel";
+    pub const PROMPT: &'static str = "Select an action for this cell\nReveal\nFlag\nUnflag\nCancel\n";
 }
 impl FromStr for CellAction {
     type Err = Box<dyn std::error::Error>;
@@ -43,7 +58,7 @@ impl FromStr for CellAction {
             "f" | "flag" => Ok(CellAction::Flag),
             "u" | "unflag" => Ok(CellAction::Unflag),
             "c" | "cancel" => Ok(CellAction::Cancel),
-            invalid => Err(format!("{} is not a valid cell action", invalid).into()),
+            invalid => Err(format!("{} is not a valid cell action.\n either use the first letter or type the whole action", invalid).into()),
         };
     }
 }
@@ -78,8 +93,6 @@ where
 /// - If cannot flush `standard output stream`
 /// - If cannot read input from `standard input stream`
 pub fn get_input(prompt: &str) -> Result<String, std::io::Error> {
-    use std::io::{stdin, stdout, Write};
-
     // prompt the user
     stdout().write(prompt.as_bytes())?; // write the prompt to `stdout`
     stdout().flush()?; // flush the standard output stream (ensure all data reaches its destination ie the terminal)
@@ -96,10 +109,12 @@ pub fn get_input(prompt: &str) -> Result<String, std::io::Error> {
 /// contains the information pertaining to a cell
 struct Cell {
     is_mine: bool,
-    /// number of mines surrounding this cell
+    /// number of mines surrounding this [Cell]
     local_mines: usize,
-    /// determines if the user has picked to reveal contents of cell
+    /// represents if the user has picked to reveal contents of [Cell]
     is_revealed: bool,
+    /// represents if the user has flagged the [Cell]
+    is_flagged: bool,
 }
 impl Display for Cell {
     /// display as mine as "*". If empty, displays the number of mines in cells around it
@@ -119,9 +134,10 @@ impl Display for Cell {
 impl Cell {
     /// a clear cell used for a default value
     pub const CLEAR: Self = Self {
-        is_mine: false,
         local_mines: 0,
+        is_mine: false,
         is_revealed: false,
+        is_flagged: false,
     };
     /// used to generate a random cell
     pub fn random(is_mine_percentage: f64) -> Self {
@@ -130,10 +146,17 @@ impl Cell {
             is_mine: rng.gen_bool(is_mine_percentage),
             local_mines: 0,
             is_revealed: false,
+            is_flagged: false,
         };
     }
     pub fn reveal(&mut self) {
         self.is_revealed = true;
+    }
+    pub fn flag(&mut self) {
+        self.is_flagged = true;
+    }
+    pub fn unflag(&mut self) {
+        self.is_flagged = false;
     }
 }
 
@@ -229,18 +252,22 @@ impl<const W: usize, const H: usize> Board<W, H> {
         return local_mine_count;
     }
 
-    pub fn reveal_cell(&mut self, row_index: usize, column_index: usize) {
-        // check if there is a cell at row_index, column_index
-        match self
-            .cells
-            .get_mut(row_index)
-            .and_then(|row| row.get_mut(column_index))
-        {
-            Some(cell) => cell.reveal(), // reveal the cell if there is [Some] [Cell]
-            None => {}                   // do nothing if there is no cell
-        }
+
+    pub const fn width(&self) -> usize {
+        return W;
+    }
+    pub const fn height(&self) -> usize {
+        return H;
     }
 
+    /// This function returns a reference to a specified cell if the index is valid
+    pub fn get_cell(&self, row_index: usize, column_index: usize) -> Option<&Cell> {
+        return self.cells.get(row_index).and_then(|row| row.get(column_index));
+    }
+    /// This function returns a mutable reference to a specified cell if the index is valid
+    pub fn get_cell_mut(&mut self, row_index: usize, column_index: usize) -> Option<&mut Cell> {
+        return self.cells.get_mut(row_index).and_then(|row| row.get_mut(column_index));
+    }
     pub fn cells(&self) -> &[[Cell; W]; H] {
         return &self.cells;
     }
