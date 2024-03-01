@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::{cell, fmt::Display};
+use std::fmt::Display;
 
 fn main() {
     let minesweeper_board = Board::<5, 5>::initialize_random();
