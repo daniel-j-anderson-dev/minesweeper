@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::fmt::Display;
+use std::{fmt::Display, str::FromStr};
 
 fn main() {
     let mut minesweeper_board = Board::<10, 10>::random(0.20);
@@ -8,7 +8,31 @@ fn main() {
             cell.reveal()
         }
     }
+
+
     println!("{}", minesweeper_board);
+}
+
+/// <b> This function will call [get_input] forever until the [String] returned can be `parsed` into a `T`. </b>
+/// # Generics
+/// - `T`: This type must implement [FromStr] meaning it can be parsed.
+///   - The [FromStr::Err] type associated with `T` must also implement the [std::error::Error] trait
+/// # Errors
+/// - When [get_input] fails
+pub fn get_parsed_input<T>(prompt: &str) -> Result<T, std::io::Error>
+where
+    T: FromStr,
+    T::Err: std::error::Error,
+{
+    loop {
+        let input = get_input(prompt)?; // get input
+
+        // attempt to parse input
+        match input.parse() {
+            Ok(parsed_input) => return Ok(parsed_input), // if the input could be parsed return it
+            Err(parse_error) => println!("\nInvalid input\n{}\n", parse_error), // otherwise print an error and continue the loop
+        }
+    }
 }
 
 /// This function will display the `prompt` to the user using `standard output stream` ([std::io::Stdout]). <br>
@@ -178,7 +202,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
             .and_then(|row| row.get_mut(column_index))
         {
             Some(cell) => cell.reveal(), // reveal the cell if there is [Some] [Cell]
-            None => {}, // do nothing if there is no cell
+            None => {}                   // do nothing if there is no cell
         }
     }
 
