@@ -102,9 +102,11 @@ impl<const W: usize, const H: usize> Board<W, H> {
         return local_mine_count;
     }
 
+    /// This reflective function returns the first const parameter
     pub const fn width(&self) -> usize {
         return W;
     }
+    /// This reflective function returns the second const parameter
     pub const fn height(&self) -> usize {
         return H;
     }
@@ -123,9 +125,11 @@ impl<const W: usize, const H: usize> Board<W, H> {
             .get_mut(row_index)
             .and_then(|row| row.get_mut(column_index));
     }
+    /// This function returns a references to the [Board]'s`cells`
     pub fn cells(&self) -> &[[Cell; W]; H] {
         return &self.cells;
     }
+    /// This function returns a mutable references to the [Board]'s`cells`
     pub fn cells_mut(&mut self) -> &mut [[Cell; W]; H] {
         return &mut self.cells;
     }
