@@ -46,7 +46,7 @@ impl Cell {
     };
     /// used to generate a random cell
     pub fn random(is_mine_percentage: f64) -> Self {
-        let mut rng = rand::thread_rng(); // random thread value
+        let mut rng = rand::thread_rng(); // thread specific random number generator
         return Self {
             is_mine: rng.gen_bool(is_mine_percentage),
             local_mines: 0,
