@@ -25,10 +25,14 @@ struct Cell {
 impl Display for Cell {
     /// display as mine as "*". If empty, displays the number of mines in cells around it
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.is_mine {
-            write!(f, "*")?;
+        if self.is_revealed {
+            if self.is_mine {
+                write!(f, "*")?;
+            } else {
+                write!(f, "{}", self.local_mines)?;
+            }
         } else {
-            write!(f, "{}", self.local_mines)?;
+            write!(f, " ")?;
         }
         return Ok(());
     }
