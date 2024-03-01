@@ -1,35 +1,46 @@
 use rand::Rng;
-use std::{fmt::Display, io::{stdin, stdout, Write}, str::FromStr};
+use std::{
+    fmt::Display,
+    io::{stdin, stdout, Write},
+    str::FromStr,
+};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut board = Board::<10, 10>::random(0.20);
 
     loop {
-        println!("{}x{} Board:\n{}", board.width(), board.height(), board);
+        println!("\n{}x{} Board:\n{}", board.width(), board.height(), board);
 
         // allow user to select a cell
-        let row_index = get_parsed_input("Please enter a row number: ")?;
+        let row_index = get_parsed_input("Select a cell\nPlease enter a row number: ")?;
         let column_index = get_parsed_input("Please enter a column number: ")?;
 
         // ensure the user entered a valid cell
         let cell = match board.get_cell_mut(row_index, column_index) {
             Some(cell) => cell,
             None => {
-                println!("\n({},{}) is not a cell on the board. (0 based indices)\n", row_index, column_index);
+                println!(
+                    "\n({},{}) is not on the board.\nNote: row/column numbers start at 0",
+                    row_index, column_index
+                );
                 continue;
-            },
+            }
         };
 
-        // allow the user to choose an action with that cell 
-        let cell_action: CellAction = get_parsed_input("Select an action for this cell\nReveal\nFlag\nUnflag\nCancel\n")?;
+        // allow the user to choose an action with that cell
+        let cell_action: CellAction =
+            get_parsed_input("\nSelect an action for this cell\nReveal\nFlag\nUnflag\nCancel\n")?;
 
         // perform cell action
         match cell_action {
             CellAction::Reveal => {
                 cell.reveal();
                 if cell.is_mine {
-                    println!("YOU REVEALED A MINE!\nGAME OVER");
-                    let quit = match get_input("play again? (Enter yes to play again)\n")?.to_lowercase().as_str() {
+                    println!("\nYOU REVEALED A MINE!\nGAME OVER\n");
+                    let quit = match get_input("play again? (Enter yes to play again)\n")?
+                        .to_lowercase()
+                        .as_str()
+                    {
                         "y" | "yes" => false,
                         _ => true,
                     };
@@ -40,13 +51,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         continue;
                     }
                 }
-            },
+            }
             CellAction::Flag => cell.flag(),
             CellAction::Unflag => cell.unflag(),
             CellAction::Cancel => continue,
         };
     }
-    
+
     return Ok(());
 }
 
@@ -133,7 +144,7 @@ impl Display for Cell {
                 write!(f, "{}", self.local_mines)?;
             }
         } else {
-            write!(f, " ")?;
+            write!(f, "#")?;
         }
         return Ok(());
     }
@@ -259,7 +270,6 @@ impl<const W: usize, const H: usize> Board<W, H> {
         return local_mine_count;
     }
 
-
     pub const fn width(&self) -> usize {
         return W;
     }
@@ -269,11 +279,17 @@ impl<const W: usize, const H: usize> Board<W, H> {
 
     /// This function returns a reference to a specified cell if the index is valid
     pub fn get_cell(&self, row_index: usize, column_index: usize) -> Option<&Cell> {
-        return self.cells.get(row_index).and_then(|row| row.get(column_index));
+        return self
+            .cells
+            .get(row_index)
+            .and_then(|row| row.get(column_index));
     }
     /// This function returns a mutable reference to a specified cell if the index is valid
     pub fn get_cell_mut(&mut self, row_index: usize, column_index: usize) -> Option<&mut Cell> {
-        return self.cells.get_mut(row_index).and_then(|row| row.get_mut(column_index));
+        return self
+            .cells
+            .get_mut(row_index)
+            .and_then(|row| row.get_mut(column_index));
     }
     pub fn cells(&self) -> &[[Cell; W]; H] {
         return &self.cells;
