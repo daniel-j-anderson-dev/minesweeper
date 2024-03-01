@@ -41,12 +41,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 // if the cell is a mine then game over
                 if cell.is_mine {
                     clear_terminal();
-                    for row in board.cells_mut() {
-                        for cell in row {
-                            cell.reveal()
-                        }
-                    };
-                    println!("\nYOU REVEALED A MINE!\nGAME OVER\n{}\n", board);
+                    println!("\nYOU REVEALED A MINE!\nGAME OVER\n{}\n", board.cells_revealed());
 
                     // Reset the game if the user doesn't want to quit
                     if quit()? {
@@ -200,6 +195,8 @@ impl Cell {
 }
 
 /// A 2 dimensional board of `WIDTH` x `HEIGHT` [Cell]s in area.
+
+#[derive(Clone, Copy)]
 struct Board<const WIDTH: usize, const HEIGHT: usize> {
     cells: [[Cell; WIDTH]; HEIGHT],
 }
@@ -323,5 +320,16 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
     pub fn cells_mut(&mut self) -> &mut [[Cell; W]; H] {
         return &mut self.cells;
+    }
+
+    /// Returns a copy of all of the cells revealed
+    pub fn cells_revealed(&self) -> Self {
+        let mut clone = Board::clone(&self);
+        for row in clone.cells_mut() {
+            for cell in row {
+                cell.reveal();
+            }
+        }
+        return clone;
     }
 }
