@@ -74,6 +74,16 @@ impl<const W: usize, const H: usize> Display for Board<W, H> {
 impl<const W: usize, const H: usize> Board<W, H> {
     /// Initialize the minesweeper board with random true/false
     pub fn initialize_random() -> Self {
+        let mut cells = Board::random_cells();
+        
+        Board::local_mine_count(&mut cells);
+
+        return Board {
+            cells: cells
+        };
+    }
+
+    fn random_cells() -> [[Cell; W]; H] {
         let mut cells = [[Cell::CLEAR; W]; H];
 
         for row in cells.iter_mut() {
@@ -81,16 +91,12 @@ impl<const W: usize, const H: usize> Board<W, H> {
                 *cell = Cell::random();
             }
         }
-        
-        // place the array of cells in the board
-        let mut board = Self { cells: cells };
-        // determine the local mine count
-        board.local_mine_count();
 
-        return board;
+        return cells;
     }
+
     /// determine the local mine count for each cell of the board and assigns it
-    pub fn local_mine_count(&mut self) {
+    pub fn local_mine_count(cells: &mut [[Cell; W]; H]) {
         let mut local_mine_count: usize = 0;
 
         // I didn't use an iterator bc I couldn't wrap my head around the logic for this given scenario...
@@ -102,11 +108,11 @@ impl<const W: usize, const H: usize> Board<W, H> {
                         // Check if the neighboring cells are within bounds
                         if i >= 0
                             && j >= 0
-                            && i < self.cells.len() as isize
-                            && j < self.cells[i as usize].len() as isize
+                            && i < cells.len() as isize
+                            && j < cells[i as usize].len() as isize
                         {
                             // Increment the local mine count
-                            if self.cells[i as usize][j as usize].is_mine {
+                            if cells[i as usize][j as usize].is_mine {
                                 local_mine_count += 1;
                             }
                         }
@@ -114,12 +120,12 @@ impl<const W: usize, const H: usize> Board<W, H> {
                 }
 
                 // if the current cell has a mine it is subtracted from the local mine count
-                if self.cells[row][col].is_mine {
+                if cells[row][col].is_mine {
                     local_mine_count -= 1;
                 }
 
                 // set the local mine count for the given cell, based on the count accumulated
-                self.cells[row][col].local_mines = local_mine_count;
+                cells[row][col].local_mines = local_mine_count;
                 // reset the local mine count for the next cell in the iteration
                 local_mine_count = 0;
             }
