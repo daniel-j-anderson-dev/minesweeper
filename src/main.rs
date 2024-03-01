@@ -117,27 +117,36 @@ impl<const W: usize, const H: usize> Board<W, H> {
     
     /// count the number of [Cell]s that are mines surrounding a [Cell] at the specified indices
     fn count_local_mines(cells: &[[Cell; W]; H], row_index: usize, column_index: usize) -> usize {
-        let mut local_mine_count: usize = 0;
+        let mut local_mine_count = 0;
 
-        for i in (row_index as isize - 1)..=(row_index as isize + 1) {
-            for j in (column_index as isize - 1)..=(column_index as isize + 1) {
-                // Check if the neighboring cells are within bounds
-                if i >= 0
-                    && j >= 0
-                    && i < cells.len() as isize
-                    && j < cells[i as usize].len() as isize
+        // if the cell in question is not a mine
+        if !cells[row_index][column_index].is_mine {
+
+            // list indices of all neighboring cells
+            let neighbor_indices = [
+                (row_index as isize - 1, column_index as isize - 1),
+                (row_index as isize - 1, column_index as isize - 0),
+                (row_index as isize - 1, column_index as isize + 1),
+                (row_index as isize - 0, column_index as isize - 1),
+                (row_index as isize + 0, column_index as isize + 1),
+                (row_index as isize + 1, column_index as isize - 1),
+                (row_index as isize + 1, column_index as isize + 0),
+                (row_index as isize + 1, column_index as isize + 1),
+            ];
+
+            for (neighbor_row, neighbor_column) in neighbor_indices {
+                // if the neighbor is in bounds
+                if neighbor_row >= 0
+                    && neighbor_column >= 0
+                    && neighbor_row < H as isize
+                    && neighbor_column < W as isize
                 {
                     // Increment the local mine count
-                    if cells[i as usize][j as usize].is_mine {
+                    if cells[neighbor_row as usize][neighbor_column as usize].is_mine {
                         local_mine_count += 1;
                     }
                 }
             }
-        }
-
-        // if the current cell has a mine it is subtracted from the local mine count
-        if cells[row_index][column_index].is_mine {
-            local_mine_count -= 1;
         }
 
         return local_mine_count;
