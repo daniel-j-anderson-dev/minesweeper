@@ -3,11 +3,6 @@ use std::{fmt::Display, io::{stdin, stdout, Write}, str::FromStr};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut board = Board::<10, 10>::random(0.20);
-    for row in board.cells_mut() {
-        for cell in row.iter_mut() {
-            cell.reveal()
-        }
-    }
 
     loop {
         println!("{}x{} Board:\n{}", board.width(), board.height(), board);
@@ -26,29 +21,41 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
 
         // allow the user to choose an action with that cell 
-        let cell_action: CellAction = get_parsed_input(CellAction::PROMPT)?;
+        let cell_action: CellAction = get_parsed_input("Select an action for this cell\nReveal\nFlag\nUnflag\nCancel\n")?;
 
         // perform cell action
         match cell_action {
-            CellAction::Reveal => cell.reveal(),
+            CellAction::Reveal => {
+                cell.reveal();
+                if cell.is_mine {
+                    println!("YOU REVEALED A MINE!\nGAME OVER");
+                    let quit = match get_input("play again? (Enter yes to play again)\n")?.to_lowercase().as_str() {
+                        "y" | "yes" => false,
+                        _ => true,
+                    };
+                    if quit {
+                        break;
+                    } else {
+                        board = Board::<10, 10>::random(0.20);
+                        continue;
+                    }
+                }
+            },
             CellAction::Flag => cell.flag(),
             CellAction::Unflag => cell.unflag(),
             CellAction::Cancel => continue,
         };
     }
-
     
     return Ok(());
 }
 
+#[derive(Debug)]
 pub enum CellAction {
     Reveal,
     Flag,
     Unflag,
     Cancel,
-}
-impl CellAction {
-    pub const PROMPT: &'static str = "Select an action for this cell\nReveal\nFlag\nUnflag\nCancel\n";
 }
 impl FromStr for CellAction {
     type Err = Box<dyn std::error::Error>;
