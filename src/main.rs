@@ -74,10 +74,9 @@ impl<const W: usize, const H: usize> Display for Board<W, H> {
 impl<const W: usize, const H: usize> Board<W, H> {
     /// Initialize the minesweeper board with random true/false
     pub fn initialize_random() -> Self {
-        let mut cells = Board::random_cells();
+        let cells = Board::random_cells();
+        let cells = Board::initialize_local_mines(cells);
         
-        Board::initialize_local_mines(&mut cells);
-
         return Board {
             cells: cells
         };
@@ -96,18 +95,22 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     /// Initializes all of the `cell`s `local_mines` field.
-    fn initialize_local_mines(cells: &mut [[Cell; W]; H]) {
+    fn initialize_local_mines(cells: [[Cell; W]; H]) -> [[Cell; W]; H] {
+        let mut cells = cells;
+
         // I didn't use an iterator bc I couldn't wrap my head around the logic for this given scenario...
         // It needed to be able to iterate across local cells within the board while also iterating across the entire board
         for row in 0..W {
             for column in 0..H {
 
-                let local_mine_count = Self::count_local_mines(cells, row, column);
+                let local_mine_count = Self::count_local_mines(&cells, row, column);
 
                 // set the local mine count for the given cell, based on the count accumulated
                 cells[row][column].local_mines = local_mine_count;
             }
         }
+
+        return cells;
     }
     
     /// count the number of [Cell]s that are mines surrounding a specific [Cell] at the specified indices
