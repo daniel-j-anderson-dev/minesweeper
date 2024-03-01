@@ -2,7 +2,7 @@ use rand::Rng;
 use std::fmt::Display;
 
 fn main() {
-    let mut minesweeper_board = Board::<10, 10>::random();
+    let mut minesweeper_board = Board::<10, 10>::random(0.20);
     for row in minesweeper_board.cells_mut() {
         for cell in row.iter_mut() {
             cell.reveal()
@@ -75,9 +75,9 @@ impl<const W: usize, const H: usize> Display for Board<W, H> {
 impl<const W: usize, const H: usize> Board<W, H> {
 
     /// Initialize the minesweeper board with random true/false
-    pub fn random() -> Self {
+    pub fn random(is_mine_percentage: f64) -> Self {
         // create cells that have a 50% chance of being a mine
-        let cells = Board::random_cells(0.5);
+        let cells = Board::random_cells(is_mine_percentage);
         let cells = Board::initialize_local_mines(cells);
         
         return Board {
