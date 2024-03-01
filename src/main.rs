@@ -95,7 +95,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
         return cells;
     }
 
-    /// determine the local mine count for each cell of the board and assigns it
+    /// Initializes all of the `cell`s `local_mines` field.
     fn initialize_local_mines(cells: &mut [[Cell; W]; H]) {
         // I didn't use an iterator bc I couldn't wrap my head around the logic for this given scenario...
         // It needed to be able to iterate across local cells within the board while also iterating across the entire board
@@ -110,6 +110,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
         }
     }
     
+    /// count the number of [Cell]s that are mines surrounding a specific [Cell] at the specified indices
     fn count_local_mines(cells: &[[Cell; W]; H], row_index: usize, column_index: usize) -> usize {
         let mut local_mine_count: usize = 0;
 
