@@ -1,5 +1,5 @@
-use std::fmt::Display;
 use rand::Rng;
+use std::fmt::Display;
 
 #[derive(Clone, Copy)]
 /// contains the information pertaining to a cell
@@ -58,7 +58,7 @@ impl Cell {
     pub fn unflag(&mut self) {
         self.is_flagged = false;
     }
-    /// returns the value of [Cell::is_mine] 
+    /// returns the value of [Cell::is_mine]
     pub fn is_mine(&self) -> bool {
         return self.is_mine;
     }
