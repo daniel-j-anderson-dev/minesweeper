@@ -56,7 +56,7 @@ impl Cell {
     }
 }
 
-/// A 2 dimensional board of `WIDTH` x `HEIGHT` [Cell]s in area. 
+/// A 2 dimensional board of `WIDTH` x `HEIGHT` [Cell]s in area.
 struct Board<const WIDTH: usize, const HEIGHT: usize> {
     cells: [[Cell; WIDTH]; HEIGHT],
 }
@@ -73,16 +73,13 @@ impl<const W: usize, const H: usize> Display for Board<W, H> {
     }
 }
 impl<const W: usize, const H: usize> Board<W, H> {
-
     /// Initialize the minesweeper board with random true/false
     pub fn random(is_mine_percentage: f64) -> Self {
         // create cells that have a 50% chance of being a mine
         let cells = Board::random_cells(is_mine_percentage);
         let cells = Board::initialize_local_mines(cells);
-        
-        return Board {
-            cells: cells
-        };
+
+        return Board { cells: cells };
     }
 
     /// Create a `W`x`H` 2d array of [Cell]s that each have a `is_mine_percentage` of being a mine
@@ -114,14 +111,13 @@ impl<const W: usize, const H: usize> Board<W, H> {
 
         return cells;
     }
-    
+
     /// count the number of [Cell]s that are mines surrounding a [Cell] at the specified indices
     fn count_local_mines(cells: &[[Cell; W]; H], row_index: usize, column_index: usize) -> usize {
         let mut local_mine_count = 0;
 
         // if the cell in question is not a mine
         if !cells[row_index][column_index].is_mine {
-
             // list indices of all neighboring cells
             let neighbor_indices = [
                 (row_index as isize - 1, column_index as isize - 1),
@@ -150,6 +146,17 @@ impl<const W: usize, const H: usize> Board<W, H> {
         }
 
         return local_mine_count;
+    }
+
+    pub fn reveal_cell(&mut self, row_index: usize, column_index: usize) {
+        match self
+            .cells
+            .get_mut(row_index)
+            .and_then(|row| row.get_mut(column_index))
+        {
+            Some(cell) => cell.reveal(),
+            None => {},
+        }
     }
 
     pub fn cells(&self) -> &[[Cell; W]; H] {
