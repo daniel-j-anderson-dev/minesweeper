@@ -57,7 +57,7 @@ impl Cell {
 
 /// A 2 dimensional board of `WIDTH` x `HEIGHT` [Cell]s in area. 
 struct Board<const WIDTH: usize, const HEIGHT: usize> {
-    pub cells: [[Cell; WIDTH]; HEIGHT],
+    cells: [[Cell; WIDTH]; HEIGHT],
 }
 impl<const W: usize, const H: usize> Display for Board<W, H> {
     /// displays a board
