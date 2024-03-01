@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     loop {
         clear_terminal();
-        println!("\n{}x{} Board:\n{}", board.width(), board.height(), board);
+        println!("\n{}", board);
 
         // allow user to select a cell
         let row_index = get_parsed_input("Select a cell\nPlease enter a row number: ")?;
@@ -206,7 +206,13 @@ struct Board<const WIDTH: usize, const HEIGHT: usize> {
 impl<const W: usize, const H: usize> Display for Board<W, H> {
     /// displays a board as a grid. rows delimited by new line, cells delimited by a space
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for row in self.cells.iter() {
+        write!(f, "   ")?;
+        for column_index in 0..W {
+            write!(f, "{} ", column_index)?;
+        }
+        write!(f, "\n   {}\n", String::from("-".repeat(W * 2)))?;
+        for (row_index, row) in self.cells.iter().enumerate() {
+            write!(f, "{} |", row_index)?;
             for element in row.iter() {
                 write!(f, "{} ", element)?;
             }
