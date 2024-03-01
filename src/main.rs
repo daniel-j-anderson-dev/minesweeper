@@ -102,7 +102,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
         // It needed to be able to iterate across local cells within the board while also iterating across the entire board
         for row in 0..W {
             for column in 0..H {
-
+                // count the mines local to this cell
                 let local_mine_count = Self::count_local_mines(&cells, row, column);
 
                 // set the local mine count for the given cell, based on the count accumulated
@@ -113,7 +113,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
         return cells;
     }
     
-    /// count the number of [Cell]s that are mines surrounding a specific [Cell] at the specified indices
+    /// count the number of [Cell]s that are mines surrounding a [Cell] at the specified indices
     fn count_local_mines(cells: &[[Cell; W]; H], row_index: usize, column_index: usize) -> usize {
         let mut local_mine_count: usize = 0;
 
