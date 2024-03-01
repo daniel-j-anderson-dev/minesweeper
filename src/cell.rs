@@ -50,15 +50,19 @@ impl Cell {
     pub fn reveal(&mut self) {
         self.is_revealed = true;
     }
+    /// sets [Cell::is_flagged] to `true`
     pub fn flag(&mut self) {
         self.is_flagged = true;
     }
+    /// sets [Cell::is_flagged] to `false`
     pub fn unflag(&mut self) {
         self.is_flagged = false;
     }
+    /// returns the value of [Cell::is_mine] 
     pub fn is_mine(&self) -> bool {
         return self.is_mine;
     }
+    /// set the value of [Cell::local_mines]
     pub fn set_local_mines(&mut self, local_mine_count: usize) {
         self.local_mines = local_mine_count;
     }
