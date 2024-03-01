@@ -81,6 +81,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
                 *cell = Cell::random();
             }
         }
+        
         // place the array of cells in the board
         let mut board = Self { cells: cells };
         // determine the local mine count
