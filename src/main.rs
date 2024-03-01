@@ -82,6 +82,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
         };
     }
 
+    /// Create a `W`x`H` 2d array of [Cell]s that each have a 50% of being a mine
     fn random_cells() -> [[Cell; W]; H] {
         let mut cells = [[Cell::CLEAR; W]; H];
 
