@@ -45,10 +45,10 @@ impl Cell {
         is_revealed: false,
     };
     /// used to generate a random cell
-    pub fn random() -> Self {
+    pub fn random(is_mine_percentage: f64) -> Self {
         let mut rng = rand::thread_rng(); // random thread value
         return Self {
-            is_mine: rng.gen_bool(0.5),
+            is_mine: rng.gen_bool(is_mine_percentage),
             local_mines: 0,
             is_revealed: false,
         };
@@ -74,7 +74,8 @@ impl<const W: usize, const H: usize> Display for Board<W, H> {
 impl<const W: usize, const H: usize> Board<W, H> {
     /// Initialize the minesweeper board with random true/false
     pub fn initialize_random() -> Self {
-        let cells = Board::random_cells();
+        // create cells that have a 50% chance of being a mine
+        let cells = Board::random_cells(0.5);
         let cells = Board::initialize_local_mines(cells);
         
         return Board {
@@ -82,13 +83,13 @@ impl<const W: usize, const H: usize> Board<W, H> {
         };
     }
 
-    /// Create a `W`x`H` 2d array of [Cell]s that each have a 50% of being a mine
-    fn random_cells() -> [[Cell; W]; H] {
+    /// Create a `W`x`H` 2d array of [Cell]s that each have a `is_mine_percentage` of being a mine
+    fn random_cells(is_mine_percentage: f64) -> [[Cell; W]; H] {
         let mut cells = [[Cell::CLEAR; W]; H];
 
         for row in cells.iter_mut() {
             for cell in row.iter_mut() {
-                *cell = Cell::random();
+                *cell = Cell::random(is_mine_percentage);
             }
         }
 
@@ -96,9 +97,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     /// Initializes all of the `cell`s `local_mines` field.
-    fn initialize_local_mines(cells: [[Cell; W]; H]) -> [[Cell; W]; H] {
-        let mut cells = cells;
-
+    fn initialize_local_mines(mut cells: [[Cell; W]; H]) -> [[Cell; W]; H] {
         // I didn't use an iterator bc I couldn't wrap my head around the logic for this given scenario...
         // It needed to be able to iterate across local cells within the board while also iterating across the entire board
         for row in 0..W {
