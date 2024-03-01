@@ -149,13 +149,14 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     pub fn reveal_cell(&mut self, row_index: usize, column_index: usize) {
+        // check if there is a cell at row_index, column_index
         match self
             .cells
             .get_mut(row_index)
             .and_then(|row| row.get_mut(column_index))
         {
-            Some(cell) => cell.reveal(),
-            None => {},
+            Some(cell) => cell.reveal(), // reveal the cell if there is [Some] [Cell]
+            None => {}, // do nothing if there is no cell
         }
     }
 
