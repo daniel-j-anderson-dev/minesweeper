@@ -1,7 +1,7 @@
 use rand::Rng;
 use std::{fmt::Display, str::FromStr};
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut minesweeper_board = Board::<10, 10>::random(0.20);
     for row in minesweeper_board.cells_mut() {
         for cell in row.iter_mut() {
@@ -9,20 +9,55 @@ fn main() {
         }
     }
 
+    loop {
+        println!("Board:\n{}", minesweeper_board);
 
-    println!("{}", minesweeper_board);
+        println!("Select a cell");
+        let row_index: usize = get_parsed_input("Please enter a row number: ")?;
+        let column_index: usize = get_parsed_input("Please enter a column number")?;
+
+
+
+        let cell_action: CellAction = get_parsed_input("What action fo you want to perform on this cell?\n")?;
+
+    }
+
+    
+    return Ok(());
+}
+
+pub enum CellAction {
+    Reveal,
+    Flag,
+    Unflag,
+    Cancel,
+}
+impl CellAction {
+    pub const PROMPT: &'static str = "Select an action for this cell\nReveal\nFlag\nUnflag\nCancel";
+}
+impl FromStr for CellAction {
+    type Err = Box<dyn std::error::Error>;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        return match s.to_lowercase().as_str() {
+            "r" | "reveal" => Ok(CellAction::Reveal),
+            "f" | "flag" => Ok(CellAction::Flag),
+            "u" | "unflag" => Ok(CellAction::Unflag),
+            "c" | "cancel" => Ok(CellAction::Cancel),
+            invalid => Err(format!("{} is not a valid cell action", invalid).into()),
+        };
+    }
 }
 
 /// <b> This function will call [get_input] forever until the [String] returned can be `parsed` into a `T`. </b>
 /// # Generics
 /// - `T`: This type must implement [FromStr] meaning it can be parsed.
-///   - The [FromStr::Err] type associated with `T` must also implement the [std::error::Error] trait
+///   - The [FromStr::Err] type associated with `T` must also implement the [std::fmt::Display] trait to be shown to the user
 /// # Errors
 /// - When [get_input] fails
 pub fn get_parsed_input<T>(prompt: &str) -> Result<T, std::io::Error>
 where
     T: FromStr,
-    T::Err: std::error::Error,
+    T::Err: std::fmt::Display,
 {
     loop {
         let input = get_input(prompt)?; // get input
