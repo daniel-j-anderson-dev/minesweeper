@@ -76,7 +76,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
     pub fn initialize_random() -> Self {
         let mut cells = Board::random_cells();
         
-        Board::count_local_mines(&mut cells);
+        Board::initialize_local_mines(&mut cells);
 
         return Board {
             cells: cells
@@ -96,40 +96,44 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     /// determine the local mine count for each cell of the board and assigns it
-    fn count_local_mines(cells: &mut [[Cell; W]; H]) {
-        let mut local_mine_count: usize = 0;
-
+    fn initialize_local_mines(cells: &mut [[Cell; W]; H]) {
         // I didn't use an iterator bc I couldn't wrap my head around the logic for this given scenario...
         // It needed to be able to iterate across local cells within the board while also iterating across the entire board
         for row in 0..W {
-            for col in 0..H {
-                for i in (row as isize - 1)..=(row as isize + 1) {
-                    for j in (col as isize - 1)..=(col as isize + 1) {
-                        // Check if the neighboring cells are within bounds
-                        if i >= 0
-                            && j >= 0
-                            && i < cells.len() as isize
-                            && j < cells[i as usize].len() as isize
-                        {
-                            // Increment the local mine count
-                            if cells[i as usize][j as usize].is_mine {
-                                local_mine_count += 1;
-                            }
-                        }
-                    }
-                }
+            for column in 0..H {
 
-                // if the current cell has a mine it is subtracted from the local mine count
-                if cells[row][col].is_mine {
-                    local_mine_count -= 1;
-                }
+                let local_mine_count = Self::count_local_mines(cells, row, column);
 
                 // set the local mine count for the given cell, based on the count accumulated
-                cells[row][col].local_mines = local_mine_count;
-                // reset the local mine count for the next cell in the iteration
-                local_mine_count = 0;
+                cells[row][column].local_mines = local_mine_count;
             }
         }
     }
     
+    fn count_local_mines(cells: &[[Cell; W]; H], row_index: usize, column_index: usize) -> usize {
+        let mut local_mine_count: usize = 0;
+
+        for i in (row_index as isize - 1)..=(row_index as isize + 1) {
+            for j in (column_index as isize - 1)..=(column_index as isize + 1) {
+                // Check if the neighboring cells are within bounds
+                if i >= 0
+                    && j >= 0
+                    && i < cells.len() as isize
+                    && j < cells[i as usize].len() as isize
+                {
+                    // Increment the local mine count
+                    if cells[i as usize][j as usize].is_mine {
+                        local_mine_count += 1;
+                    }
+                }
+            }
+        }
+
+        // if the current cell has a mine it is subtracted from the local mine count
+        if cells[row_index][column_index].is_mine {
+            local_mine_count -= 1;
+        }
+
+        return local_mine_count;
+    }
 }
