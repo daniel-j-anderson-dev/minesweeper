@@ -76,7 +76,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
     pub fn initialize_random() -> Self {
         let mut cells = Board::random_cells();
         
-        Board::local_mine_count(&mut cells);
+        Board::count_local_mines(&mut cells);
 
         return Board {
             cells: cells
@@ -96,7 +96,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     /// determine the local mine count for each cell of the board and assigns it
-    pub fn local_mine_count(cells: &mut [[Cell; W]; H]) {
+    fn count_local_mines(cells: &mut [[Cell; W]; H]) {
         let mut local_mine_count: usize = 0;
 
         // I didn't use an iterator bc I couldn't wrap my head around the logic for this given scenario...
@@ -131,4 +131,5 @@ impl<const W: usize, const H: usize> Board<W, H> {
             }
         }
     }
+    
 }
