@@ -77,8 +77,8 @@ impl<const W: usize, const H: usize> Board<W, H> {
         let mut cells = [[Cell::CLEAR; W]; H];
 
         for row in cells.iter_mut() {
-            for element in row.iter_mut() {
-                *element = Cell::random();
+            for cell in row.iter_mut() {
+                *cell = Cell::random();
             }
         }
         // place the array of cells in the board
