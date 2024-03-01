@@ -55,7 +55,7 @@ impl Cell {
     }
 }
 
-/// Board contains an 2D array of cells
+/// A 2 dimensional board of `WIDTH` x `HEIGHT` [Cell]s in area. 
 struct Board<const WIDTH: usize, const HEIGHT: usize> {
     pub cells: [[Cell; WIDTH]; HEIGHT],
 }
