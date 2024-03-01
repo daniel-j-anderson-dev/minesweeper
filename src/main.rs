@@ -2,7 +2,7 @@ use rand::Rng;
 use std::fmt::Display;
 
 fn main() {
-    let mut minesweeper_board = Board::<5, 5>::random();
+    let mut minesweeper_board = Board::<10, 10>::random();
     for row in minesweeper_board.cells_mut() {
         for cell in row.iter_mut() {
             cell.reveal()
