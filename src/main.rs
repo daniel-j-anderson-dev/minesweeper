@@ -9,6 +9,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut board = Board::<10, 10>::random(0.20);
 
     loop {
+        clear_terminal();
         println!("\n{}x{} Board:\n{}", board.width(), board.height(), board);
 
         // allow user to select a cell
@@ -34,17 +35,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         // perform cell action
         match cell_action {
             CellAction::Reveal => {
+                // reveal the cell
                 cell.reveal();
+
+                // if the cell is a mine then game over
                 if cell.is_mine {
-                    println!("\nYOU REVEALED A MINE!\nGAME OVER\n");
-                    let quit = match get_input("play again? (Enter yes to play again)\n")?
-                        .to_lowercase()
-                        .as_str()
-                    {
-                        "y" | "yes" => false,
-                        _ => true,
+                    clear_terminal();
+                    for row in board.cells_mut() {
+                        for cell in row {
+                            cell.reveal()
+                        }
                     };
-                    if quit {
+                    println!("\nYOU REVEALED A MINE!\nGAME OVER\n{}\n", board);
+
+                    // Reset the game if the user doesn't want to quit
+                    if quit()? {
                         break;
                     } else {
                         board = Board::<10, 10>::random(0.20);
@@ -59,6 +64,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     return Ok(());
+}
+
+pub fn clear_terminal() {
+    print!("\x1B[2J\x1B[1;1H");
+}
+
+pub fn quit() -> Result<bool, std::io::Error> {
+    return match get_input("play again? (Enter yes to play again)\n")?
+        .to_lowercase()
+        .as_str()
+    {
+        "y" | "yes" => Ok(false),
+        _ => Ok(true),
+    };
 }
 
 #[derive(Debug)]
@@ -143,6 +162,8 @@ impl Display for Cell {
             } else {
                 write!(f, "{}", self.local_mines)?;
             }
+        } else if self.is_flagged {
+            write!(f, "⚑")?;
         } else {
             write!(f, "#")?;
         }
