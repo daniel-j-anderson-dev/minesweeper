@@ -3,8 +3,15 @@ use std::{
     str::FromStr,
 };
 
-pub fn clear_terminal() {
-    print!("\x1B[2J\x1B[1;1H");
+use crate::board::Board;
+
+
+/// Clear the terminal by writing a special string to the standard output.
+/// # Errors
+/// - When cannot [write] to [stdout]
+pub fn clear_terminal() -> Result<(), std::io::Error> {
+    write!(stdout(), "\x1B[2J\x1B[1;1H")?;
+    return Ok(())
 }
 
 /// This function returns `false` if the user enters "y" or "yes". Otherwise this function returns `true`.
@@ -38,6 +45,15 @@ impl FromStr for Action {
             "u" | "unflag" => Ok(Action::Unflag),
             "c" | "cancel" => Ok(Action::Cancel),
             invalid => Err(format!("{} is not a valid cell action.\n either use the first letter or type the whole action", invalid).into()),
+        };
+    }
+}
+impl Action {
+    pub fn is_reveal(&self) -> bool {
+        return if let Action::Reveal = self {
+            true
+        } else {
+            false
         };
     }
 }
