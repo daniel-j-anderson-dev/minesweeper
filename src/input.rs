@@ -45,15 +45,6 @@ impl FromStr for Action {
         };
     }
 }
-impl Action {
-    pub fn is_reveal(&self) -> bool {
-        return if let Action::Reveal = self {
-            true
-        } else {
-            false
-        };
-    }
-}
 
 /// <b> This function will call [get_input] forever until the [String] returned can be `parsed` into a `T`. </b>
 /// # Generics
