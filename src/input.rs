@@ -3,15 +3,12 @@ use std::{
     str::FromStr,
 };
 
-use crate::board::Board;
-
-
 /// Clear the terminal by writing a special string to the standard output.
 /// # Errors
 /// - When cannot [write] to [stdout]
 pub fn clear_terminal() -> Result<(), std::io::Error> {
     write!(stdout(), "\x1B[2J\x1B[1;1H")?;
-    return Ok(())
+    return Ok(());
 }
 
 /// This function returns `false` if the user enters "y" or "yes". Otherwise this function returns `true`.
