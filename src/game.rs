@@ -28,18 +28,28 @@ impl Game {
         };
     }
 
-    pub fn execute_turn(&mut self) -> Result<GameState, std::io::Error> {
-        self.handle_input();
-        self.execute_action()?;
-        return Ok(self.state);
+    pub fn execute_turn(&mut self) -> GameState {
+        return match self.state {
+            GameState::GameOver =>  GameState::GameOver,
+            GameState::Playing => {
+                self.handle_input();
+                self.execute_action();
+                self.state
+            },
+        };
     }
 
     pub fn execute_terminal_turn(&mut self) -> Result<GameState, std::io::Error> {
-        self.display_board_terminal()?;
-        self.get_cell_index_terminal()?;
-        self.get_action_terminal()?;
-        self.execute_action()?;
-        return Ok(self.state);
+        return Ok(match self.state {
+            GameState::GameOver => GameState::GameOver,
+            GameState::Playing => {
+                self.display_board_terminal()?;
+                self.get_cell_index_terminal()?;
+                self.get_action_terminal()?;
+                self.execute_action();
+                self.state
+            },
+        });
     }
 
     /// Only to be called in execute_turn. must be called first
@@ -79,7 +89,7 @@ impl Game {
 
 
     /// Only to be called in execute_turn. must be called fourth
-    pub fn execute_action(&mut self) -> Result<(), std::io::Error> {
+    pub fn execute_action(&mut self) {
         match self.action {
             Action::Reveal => {
                 self.board[self.cell_index].reveal();
@@ -91,7 +101,6 @@ impl Game {
             Action::Unflag => self.board[self.cell_index].unflag(),
             Action::Cancel => (),
         };
-        return Ok(());
     }
 
     pub fn set_action(&mut self, action: Action) {
@@ -144,18 +153,10 @@ impl Game {
 pub enum GameState {
     GameOver,
     Playing,
-    Quit,
 }
 impl GameState {
     pub fn is_game_over(&self) -> bool {
         return if let GameState::GameOver = self {
-            true
-        } else {
-            false
-        };
-    }
-    pub fn is_quit(&self) -> bool {
-        return if let GameState::Quit = self {
             true
         } else {
             false
