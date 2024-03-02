@@ -8,9 +8,9 @@ use crate::{
 pub const WIDTH: usize = 10;
 pub const HEIGHT: usize = 10;
 
-pub const EASY_MINES: f64 = 0.1;
-pub const MEDIUM_MINES: f64 = 0.25;
-pub const HARD_MINES: f64 = 0.5;
+pub const EASY_MINES: f64 = 0.0625;
+pub const MEDIUM_MINES: f64 = 0.125;
+pub const HARD_MINES: f64 = 0.25;
 
 pub struct Game {
     board: Board<WIDTH, HEIGHT>,
@@ -21,7 +21,7 @@ pub struct Game {
 impl Game {
     pub fn new() -> Self {
         return Self {
-            board: Board::random(MEDIUM_MINES),
+            board: Board::random(MEDIUM_MINES).clone_revealed(),
             is_game_over: false,
             cell_index: (0, 0),
             action: Action::Cancel,
@@ -83,7 +83,7 @@ impl Game {
         return Ok(());
     }
     pub fn handle_game_over(&mut self) -> Result<Option<GameOver>, std::io::Error> {
-        return if self.board[self.cell_index].is_mine() {
+        return if self.action.is_reveal() && self.board[self.cell_index].is_mine() {
             clear_terminal()?;
             writeln!(stdout(), "\nYou revealed a mine!\nGAME OVER\n{}", self.board.clone_revealed())?;
             Ok(Some(GameOver))
