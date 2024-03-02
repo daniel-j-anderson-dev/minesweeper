@@ -55,10 +55,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     // Reset the game if the user doesn't want to quit
                     if quit()? {
                         break;
-                    } else {
-                        board = Board::<10, 10>::random(0.20);
-                        continue;
                     }
+                
+                    board = Board::<WIDTH, HEIGHT>::random(0.20);
+                    continue;
                 }
             }
             Action::Flag => cell.flag(),
