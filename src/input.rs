@@ -32,6 +32,15 @@ pub enum Action {
     Unflag,
     Cancel,
 }
+impl Action {
+    pub fn is_reveal(&self) -> bool {
+        return if let Action::Reveal = self {
+            true
+        } else {
+            false
+        };
+    }
+}
 impl FromStr for Action {
     type Err = Box<dyn std::error::Error>;
     /// Defines how a Action is parsed from a string
