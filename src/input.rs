@@ -18,21 +18,21 @@ pub fn quit() -> Result<bool, std::io::Error> {
 }
 
 #[derive(Debug)]
-pub enum CellAction {
+pub enum Action {
     Reveal,
     Flag,
     Unflag,
     Cancel,
 }
-impl FromStr for CellAction {
+impl FromStr for Action {
     type Err = Box<dyn std::error::Error>;
     /// Defines how a CellAction is parsed from a string
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         return match s.to_lowercase().as_str() {
-            "r" | "reveal" => Ok(CellAction::Reveal),
-            "f" | "flag" => Ok(CellAction::Flag),
-            "u" | "unflag" => Ok(CellAction::Unflag),
-            "c" | "cancel" => Ok(CellAction::Cancel),
+            "r" | "reveal" => Ok(Action::Reveal),
+            "f" | "flag" => Ok(Action::Flag),
+            "u" | "unflag" => Ok(Action::Unflag),
+            "c" | "cancel" => Ok(Action::Cancel),
             invalid => Err(format!("{} is not a valid cell action.\n either use the first letter or type the whole action", invalid).into()),
         };
     }

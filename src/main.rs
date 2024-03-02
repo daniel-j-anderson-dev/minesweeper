@@ -5,7 +5,7 @@ mod input;
 
 use crate::{
     board::Board,
-    input::{clear_terminal, get_parsed_input, quit, CellAction},
+    input::{clear_terminal, get_parsed_input, quit, Action},
 };
 
 const WIDTH: usize = 10;
@@ -40,7 +40,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         // perform cell action
         match cell_action {
-            CellAction::Reveal => {
+            Action::Reveal => {
                 // reveal the cell
                 cell.reveal();
 
@@ -61,9 +61,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 }
             }
-            CellAction::Flag => cell.flag(),
-            CellAction::Unflag => cell.unflag(),
-            CellAction::Cancel => continue,
+            Action::Flag => cell.flag(),
+            Action::Unflag => cell.unflag(),
+            Action::Cancel => continue,
         };
     }
 
