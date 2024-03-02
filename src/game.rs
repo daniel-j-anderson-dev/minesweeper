@@ -89,6 +89,7 @@ impl Game {
                     cell.reveal();
                 }
             }
+            clear_terminal()?;
             writeln!(stdout(), "\nYou revealed a mine!\nGAME OVER\n{}", self.board)?;
             Ok(Some(GameOver))
         } else {
