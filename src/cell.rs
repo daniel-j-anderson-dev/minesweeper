@@ -1,7 +1,7 @@
 use rand::Rng;
 use std::fmt::Display;
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 /// contains the information pertaining to a cell
 pub struct Cell {
     is_mine: bool,
