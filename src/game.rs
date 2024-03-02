@@ -36,12 +36,14 @@ impl Game {
         return self.handle_game_over();
     }
 
+    /// Only to be called in execute_turn. must be called first
     fn display_board(&self) -> Result<(), std::io::Error> {
         clear_terminal()?;
         writeln!(stdout(), "{}\n", self.board)?;
         return Ok(());
     }
 
+    /// Only to be called in execute_turn. must be called second
     fn get_cell_index(&mut self) -> Result<(), std::io::Error> {
         loop {
             // allow user to select a cell
@@ -62,12 +64,14 @@ impl Game {
         }
     }
 
+    /// Only to be called in execute_turn. must be called third
     pub fn get_action(&mut self) -> Result<(), std::io::Error> {
         self.action =
             get_parsed_input("\nSelect an action for this cell\nReveal\nFlag\nUnflag\nCancel\n")?;
         return Ok(());
     }
 
+    /// Only to be called in execute_turn. must be called fourth
     pub fn execute_action(&mut self) -> Result<(), std::io::Error> {
         match self.action {
             Action::Reveal => {
@@ -83,6 +87,7 @@ impl Game {
         return Ok(());
     }
 
+    /// Only to be called in execute_turn. must be called last
     pub fn handle_game_over(&mut self) -> Result<GameState, std::io::Error> {
         return if self.action.is_reveal() && self.board[self.cell_index].is_mine() {
             clear_terminal()?;
