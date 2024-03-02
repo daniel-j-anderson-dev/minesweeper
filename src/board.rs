@@ -7,7 +7,7 @@ use crate::cell::Cell;
 
 /// A 2 dimensional board of `WIDTH` x `HEIGHT` [Cell]s in area.
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct Board<const WIDTH: usize, const HEIGHT: usize> {
     cells: [[Cell; WIDTH]; HEIGHT],
 }
