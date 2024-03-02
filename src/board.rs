@@ -135,7 +135,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     /// Returns a copy of all of the cells revealed
-    pub fn cells_revealed(&self) -> Self {
+    pub fn clone_revealed(&self) -> Self {
         let mut clone = Board::clone(&self);
         for row in clone.cells_mut() {
             for cell in row {

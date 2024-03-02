@@ -35,11 +35,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
 
         // allow the user to choose an action with that cell
-        let cell_action =
+        let action =
             get_parsed_input("\nSelect an action for this cell\nReveal\nFlag\nUnflag\nCancel\n")?;
 
         // perform cell action
-        match cell_action {
+        match action {
             Action::Reveal => {
                 // reveal the cell
                 cell.reveal();
@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     clear_terminal();
                     println!(
                         "\nYOU REVEALED A MINE!\nGAME OVER\n{}\n",
-                        board.cells_revealed()
+                        board.clone_revealed()
                     );
 
                     // Reset the game if the user doesn't want to quit
