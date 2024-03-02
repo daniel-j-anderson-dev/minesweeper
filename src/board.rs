@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, ops::Index};
 
 use crate::cell::Cell;
 
@@ -7,6 +7,12 @@ use crate::cell::Cell;
 #[derive(Clone, Copy)]
 pub struct Board<const WIDTH: usize, const HEIGHT: usize> {
     cells: [[Cell; WIDTH]; HEIGHT],
+}
+impl<const W: usize, const H: usize> Index<(usize, usize)> for Board<W, H> {
+    type Output = Cell;
+    fn index(&self, index: (usize, usize)) -> &Self::Output {
+        return self.cells().index(index.0).index(index.1);
+    }
 }
 impl<const W: usize, const H: usize> Display for Board<W, H> {
     /// displays a board as a grid. rows delimited by new line, cells delimited by a space
