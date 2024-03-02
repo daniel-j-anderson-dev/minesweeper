@@ -21,14 +21,14 @@ pub struct Game {
 impl Game {
     pub fn new() -> Self {
         return Self {
-            board: Board::random(MEDIUM_MINES).clone_revealed(),
+            board: Board::random(MEDIUM_MINES),
             is_game_over: false,
             cell_index: (0, 0),
             action: Action::Cancel,
         };
     }
 
-    pub fn execute_turn(&mut self) -> Result<Option<GameOver>, std::io::Error> {
+    pub fn execute_turn(&mut self) -> Result<GameState, std::io::Error> {
         self.display_board()?;
         self.get_cell_index()?;
         self.get_action()?;
@@ -82,16 +82,29 @@ impl Game {
         };
         return Ok(());
     }
-    pub fn handle_game_over(&mut self) -> Result<Option<GameOver>, std::io::Error> {
+
+    pub fn handle_game_over(&mut self) -> Result<GameState, std::io::Error> {
         return if self.action.is_reveal() && self.board[self.cell_index].is_mine() {
             clear_terminal()?;
             writeln!(stdout(), "\nYou revealed a mine!\nGAME OVER\n{}", self.board.clone_revealed())?;
-            Ok(Some(GameOver))
+            Ok(GameState::GameOver)
         } else {
-            Ok(None)
+            Ok(GameState::Playing)
         };
     }
 }
 
 /// A marker type to signify a game over
-pub struct GameOver;
+pub enum GameState {
+    GameOver,
+    Playing,
+}
+impl GameState {
+    pub fn is_game_over(&self) -> bool {
+        return if let GameState::GameOver = self {
+            true
+        } else {
+            false
+        };
+    }
+}
