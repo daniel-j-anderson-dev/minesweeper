@@ -62,7 +62,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
         for row in 0..W {
             for column in 0..H {
                 // count the mines local to this cell
-                let local_mine_count = Self::count_local_mines(&cells, row, column);
+                let local_mine_count = Self::count_local_mines(&cells, (row, column));
 
                 // set the local mine count for the given cell, based on the count accumulated
                 cells[row][column].set_local_mines(local_mine_count);
@@ -73,21 +73,21 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     /// count the number of [Cell]s that are mines surrounding a [Cell] at the specified indices
-    fn count_local_mines(cells: &[[Cell; W]; H], row_index: usize, column_index: usize) -> usize {
+    fn count_local_mines(cells: &[[Cell; W]; H], index: (usize, usize)) -> usize {
         let mut local_mine_count = 0;
 
         // if the cell in question is not a mine
-        if !cells[row_index][column_index].is_mine() {
+        if !cells[index.0][index.1].is_mine() {
             // list indices of all neighboring cells
             let neighbor_indices = [
-                (row_index as isize - 1, column_index as isize - 1),
-                (row_index as isize - 1, column_index as isize - 0),
-                (row_index as isize - 1, column_index as isize + 1),
-                (row_index as isize - 0, column_index as isize - 1),
-                (row_index as isize + 0, column_index as isize + 1),
-                (row_index as isize + 1, column_index as isize - 1),
-                (row_index as isize + 1, column_index as isize + 0),
-                (row_index as isize + 1, column_index as isize + 1),
+                (index.0 as isize - 1, index.1 as isize - 1),
+                (index.0 as isize - 1, index.1 as isize - 0),
+                (index.0 as isize - 1, index.1 as isize + 1),
+                (index.0 as isize - 0, index.1 as isize - 1),
+                (index.0 as isize + 0, index.1 as isize + 1),
+                (index.0 as isize + 1, index.1 as isize - 1),
+                (index.0 as isize + 1, index.1 as isize + 0),
+                (index.0 as isize + 1, index.1 as isize + 1),
             ];
 
             for (neighbor_row, neighbor_column) in neighbor_indices {
@@ -118,18 +118,18 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     /// This function returns a reference to a specified cell if the index is valid
-    pub fn get_cell(&self, row_index: usize, column_index: usize) -> Option<&Cell> {
+    pub fn get_cell(&self, index: (usize, usize)) -> Option<&Cell> {
         return self
             .cells
-            .get(row_index)
-            .and_then(|row| row.get(column_index));
+            .get(index.0)
+            .and_then(|row| row.get(index.1));
     }
     /// This function returns a mutable reference to a specified cell if the index is valid
-    pub fn get_cell_mut(&mut self, row_index: usize, column_index: usize) -> Option<&mut Cell> {
+    pub fn get_cell_mut(&mut self, index: (usize, usize)) -> Option<&mut Cell> {
         return self
             .cells
-            .get_mut(row_index)
-            .and_then(|row| row.get_mut(column_index));
+            .get_mut(index.0)
+            .and_then(|row| row.get_mut(index.1));
     }
     /// This function returns a references to the [Board]'s`cells`
     pub fn cells(&self) -> &[[Cell; W]; H] {
