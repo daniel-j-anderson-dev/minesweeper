@@ -7,8 +7,11 @@ pub fn clear_terminal() {
     print!("\x1B[2J\x1B[1;1H");
 }
 
+/// This function returns `false` if the user enters "y" or "yes". Otherwise this function returns `true`.
+/// - Not case sensitive
+/// - #### fails when [get_input] fails
 pub fn quit() -> Result<bool, std::io::Error> {
-    return match get_input("play again? (Enter yes to play again)\n")?
+    return match get_input("Enter \"yes\" to play again\n")?
         .to_lowercase()
         .as_str()
     {
@@ -18,6 +21,7 @@ pub fn quit() -> Result<bool, std::io::Error> {
 }
 
 #[derive(Debug)]
+/// This enum represents the possible actions a user can take after selecting a [Cell]
 pub enum Action {
     Reveal,
     Flag,
@@ -26,7 +30,7 @@ pub enum Action {
 }
 impl FromStr for Action {
     type Err = Box<dyn std::error::Error>;
-    /// Defines how a CellAction is parsed from a string
+    /// Defines how a Action is parsed from a string
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         return match s.to_lowercase().as_str() {
             "r" | "reveal" => Ok(Action::Reveal),
