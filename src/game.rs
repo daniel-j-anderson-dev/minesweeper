@@ -1,4 +1,9 @@
-use crate::{board::Board, input::{get_parsed_input, Action}};
+use std::io::{stdout, Write};
+
+use crate::{
+    board::Board,
+    input::{clear_terminal, get_parsed_input, quit, Action},
+};
 
 pub const WIDTH: usize = 10;
 pub const HEIGHT: usize = 10;
@@ -20,29 +25,77 @@ impl Game {
             is_game_over: false,
             cell_index: (0, 0),
             action: Action::Cancel,
-            
-        }
+        };
     }
 
-    pub fn update(&mut self) -> Result<(), std::io::Error> {
+    pub fn execute_turn(&mut self) -> Result<Option<GameOver>, std::io::Error> {
+        self.display_board()?;
         self.get_cell_index()?;
+        self.get_action()?;
+        self.execute_action()?;
+        return self.handle_game_over();
+    }
 
+    fn display_board(&self) -> Result<(), std::io::Error> {
+        clear_terminal()?;
+        writeln!(stdout(), "{}\n", self.board)?;
         return Ok(());
     }
 
-    pub fn get_cell_index(&mut self) -> Result<(), std::io::Error> {
+    fn get_cell_index(&mut self) -> Result<(), std::io::Error> {
         loop {
             // allow user to select a cell
             let row_index = get_parsed_input("Select a cell\nPlease enter a row number: ")?;
             let column_index = get_parsed_input("Please enter a column number: ")?;
-    
+
             // ensure the user entered a valid cell
-            if self.board.get_cell_mut(row_index, column_index).is_none() {
+            if self.board.get_cell((row_index, column_index)).is_some() {
                 self.cell_index = (row_index, column_index);
-                return Ok(())
+                return Ok(());
             }
 
-            println!("\nInvalid input\n")
+            println!(
+                "\nThat cell is out of {}x{} bounds. Try again\n",
+                self.board.width(),
+                self.board.height()
+            );
         }
     }
+
+    pub fn get_action(&mut self) -> Result<(), std::io::Error> {
+        self.action =
+            get_parsed_input("\nSelect an action for this cell\nReveal\nFlag\nUnflag\nCancel\n")?;
+        return Ok(());
+    }
+
+    pub fn execute_action(&mut self) -> Result<(), std::io::Error> {
+        match self.action {
+            Action::Reveal => {
+                self.board[self.cell_index].reveal();
+                if self.board[self.cell_index].is_mine() {
+                    self.is_game_over = true;
+                }
+            }
+            Action::Flag => self.board[self.cell_index].flag(),
+            Action::Unflag => self.board[self.cell_index].unflag(),
+            Action::Cancel => (),
+        };
+        return Ok(());
+    }
+    pub fn handle_game_over(&mut self) -> Result<Option<GameOver>, std::io::Error> {
+        return if self.board[self.cell_index].is_mine() {
+            for row in self.board.cells_mut() {
+                for cell in row {
+                    cell.reveal();
+                }
+            }
+            writeln!(stdout(), "\nYou revealed a mine!\nGAME OVER\n{}", self.board)?;
+            Ok(Some(GameOver))
+        } else {
+            Ok(None)
+        };
+    }
 }
+
+/// A marker type to signify a game over
+pub struct GameOver;
