@@ -2,7 +2,7 @@ use std::io::{stdout, Write};
 
 use crate::{
     board::Board,
-    input::{clear_terminal, get_parsed_input, quit, Action},
+    input::{clear_terminal, get_parsed_input, Action},
 };
 
 pub const WIDTH: usize = 10;
