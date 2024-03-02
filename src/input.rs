@@ -24,7 +24,7 @@ pub fn quit() -> Result<bool, std::io::Error> {
     };
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 /// This enum represents the possible actions a user can take after selecting a [Cell]
 pub enum Action {
     Reveal,
