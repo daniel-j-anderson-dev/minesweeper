@@ -84,13 +84,8 @@ impl Game {
     }
     pub fn handle_game_over(&mut self) -> Result<Option<GameOver>, std::io::Error> {
         return if self.board[self.cell_index].is_mine() {
-            for row in self.board.cells_mut() {
-                for cell in row {
-                    cell.reveal();
-                }
-            }
             clear_terminal()?;
-            writeln!(stdout(), "\nYou revealed a mine!\nGAME OVER\n{}", self.board)?;
+            writeln!(stdout(), "\nYou revealed a mine!\nGAME OVER\n{}", self.board.clone_revealed())?;
             Ok(Some(GameOver))
         } else {
             Ok(None)
