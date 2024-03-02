@@ -1,4 +1,7 @@
-use std::{fmt::Display, ops::Index};
+use std::{
+    fmt::Display,
+    ops::{Index, IndexMut},
+};
 
 use crate::cell::Cell;
 
@@ -12,6 +15,11 @@ impl<const W: usize, const H: usize> Index<(usize, usize)> for Board<W, H> {
     type Output = Cell;
     fn index(&self, index: (usize, usize)) -> &Self::Output {
         return self.cells().index(index.0).index(index.1);
+    }
+}
+impl<const W: usize, const H: usize> IndexMut<(usize, usize)> for Board<W, H> {
+    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
+        return self.cells_mut().index_mut(index.0).index_mut(index.1);
     }
 }
 impl<const W: usize, const H: usize> Display for Board<W, H> {
@@ -119,10 +127,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
 
     /// This function returns a reference to a specified cell if the index is valid
     pub fn get_cell(&self, index: (usize, usize)) -> Option<&Cell> {
-        return self
-            .cells
-            .get(index.0)
-            .and_then(|row| row.get(index.1));
+        return self.cells.get(index.0).and_then(|row| row.get(index.1));
     }
     /// This function returns a mutable reference to a specified cell if the index is valid
     pub fn get_cell_mut(&mut self, index: (usize, usize)) -> Option<&mut Cell> {
