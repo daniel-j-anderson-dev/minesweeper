@@ -4,23 +4,28 @@ mod cell;
 mod game;
 mod input;
 
-use crate::{
-    game::Game,
-    input::quit,
-};
+use game::Game;
 
-fn main() -> Result<(), std::io::Error> {
+use color_eyre::Report;
+// use input::quit;
+use macroquad::prelude::*;
+
+#[macroquad::main("Minesweeper")]
+async fn main() -> Result<(), Report> {
     let mut game = Game::new();
 
     loop {
-        if game.execute_turn()?.is_game_over() {
+        clear_background(SKYBLUE);
 
-            if quit()? {
-                break;
-            }
+        game.draw();
 
+        let game_state = game.update();
+
+        if game_state.is_game_over() {
             game = Game::new();
         }
+
+        next_frame().await;
     }
 
     return Ok(());
