@@ -14,7 +14,7 @@ pub fn clear_terminal() -> Result<(), std::io::Error> {
 /// This function returns `false` if the user enters "y" or "yes". Otherwise this function returns `true`.
 /// - Not case sensitive
 /// - #### fails when [get_input] fails
-pub fn quit() -> Result<bool, std::io::Error> {
+pub fn quit_terminal() -> Result<bool, std::io::Error> {
     return match get_input("Enter \"yes\" to play again\n")?
         .to_lowercase()
         .as_str()
@@ -35,6 +35,23 @@ pub enum Action {
 impl Action {
     pub fn is_reveal(&self) -> bool {
         return if let Action::Reveal = self {
+            true
+        } else {
+            false
+        };
+    }
+    pub fn is_flag(&self) -> bool {
+        return if let Action::Flag = self { true } else { false };
+    }
+    pub fn is_unflag(&self) -> bool {
+        return if let Action::Unflag = self {
+            true
+        } else {
+            false
+        };
+    }
+    pub fn is_cancel(&self) -> bool {
+        return if let Action::Cancel = self {
             true
         } else {
             false
