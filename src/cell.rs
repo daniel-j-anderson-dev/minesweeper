@@ -1,4 +1,5 @@
-use rand::Rng;
+use ::rand::{thread_rng, Rng};
+use macroquad::prelude::*;
 use std::fmt::Display;
 
 #[derive(Debug, Clone, Copy)]
@@ -37,9 +38,12 @@ impl Cell {
         is_revealed: false,
         is_flagged: false,
     };
+    pub fn local_mines(&self) -> usize {
+        return self.local_mines;
+    }
     /// used to generate a random cell
     pub fn random(is_mine_percentage: f64) -> Self {
-        let mut rng = rand::thread_rng(); // thread specific random number generator
+        let mut rng = thread_rng(); // thread specific random number generator
         return Self {
             is_mine: rng.gen_bool(is_mine_percentage),
             local_mines: 0,
@@ -62,8 +66,25 @@ impl Cell {
     pub fn is_mine(&self) -> bool {
         return self.is_mine;
     }
+    /// returns the value of [Cell::is_mine]
+    pub fn is_revealed(&self) -> bool {
+        return self.is_revealed;
+    }
+    /// returns the value of [Cell::is_mine]
+    pub fn is_flagged(&self) -> bool {
+        return self.is_flagged;
+    }
     /// set the value of [Cell::local_mines]
     pub fn set_local_mines(&mut self, local_mine_count: usize) {
         self.local_mines = local_mine_count;
+    }
+
+    pub fn color(&self) -> Color {
+        match (self.is_revealed, self.is_flagged, self.is_mine) {
+            (false, true, _) => GREEN,
+            (false, _, _) => GRAY,
+            (true, _, false) => LIGHTGRAY,
+            (true, _, true) => RED,
+        }
     }
 }
